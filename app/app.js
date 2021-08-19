@@ -1,8 +1,8 @@
 // Heroku
-// const socket = io(window.location.hostname);
+const socket = io(window.location.hostname);
 
-// Local Dev
-const socket = io('ws://localhost:5000');
+// // Local Dev
+// const socket = io('ws://localhost:5000');
 
 var typing = false;
 var timeout = undefined;
