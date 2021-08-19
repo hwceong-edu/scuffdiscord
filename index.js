@@ -3,6 +3,7 @@ const http = require('http').createServer(app);
 const io = require('socket.io')(http, {
     cors: { origin: "*" }
 });
+const PORT = process.env.PORT || 5000
 
 app.get('/', (req,res) => {
     res.sendFile(__dirname + '/app/index.html')
@@ -46,4 +47,4 @@ io.on('connection', (socket) => {
 
 });
 
-http.listen(8080, () => console.log('listening on http://localhost:8080'));
+http.listen(PORT, () => console.log(`listening on ${PORT}`));
