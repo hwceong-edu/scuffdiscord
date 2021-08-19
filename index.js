@@ -14,17 +14,29 @@ app.get('/app.js', (req, res) => {
 });
 
 var typing_names = [];
+var online = [];
 
 io.on('connection', (socket) => {
     //broadcast messsage to connected users when someone connects
     socket.broadcast.emit('message', `${socket.id.substr(0,2)} connected`);
+    online.push(socket.id);
+    io.emit('online', online);
 
     socket.on('disconnect', () => {
+        const i = online.indexOf(socket.id);
+        if (i > -1) {
+            online.splice(i, 1);
+        }
         io.emit('message', `${socket.id.substr(0,2)} disconnected`);
+        io.emit('online', online);
     });
 
     socket.on('message', (message) => {
         io.emit('message', `${socket.id.substr(0,2)}: ${message}`);
+    });
+
+    socket.on('private message', (targetId, msg) => {
+        socket.to(targetId).emit('private message', socket.id, msg);
     });
 
     socket.on('typing', (name) => {
@@ -44,7 +56,6 @@ io.on('connection', (socket) => {
             socket.broadcast.emit('typing', typing_names);
         }
     });
-
 });
 
 http.listen(PORT, () => console.log(`listening on ${PORT}`));

@@ -1,4 +1,9 @@
-const socket = io(window.location.hostname);
+// Heroku
+// const socket = io(window.location.hostname);
+
+// Local Dev
+const socket = io('ws://localhost:5000');
+
 var typing = false;
 var timeout = undefined;
 
@@ -38,6 +43,26 @@ socket.on('typing', names => {
     }
     output += " is typing ...";
     document.querySelector('p').innerHTML= output;
+});
+
+socket.on('online', names => {
+    const onlineList = document.getElementById('online');
+    while (onlineList.firstChild) {
+        onlineList.removeChild(online.lastChild);
+    }
+
+    for (let i = 0; i < names.length; i++) {
+        var elem = undefined;
+        if (socket.id === names[i]) {
+            elem = document.createElement('p');
+            elem.innerHTML = names[i] + " (you)";
+        } else {
+            elem = document.createElement('button');
+            elem.innerHTML = names[i];
+        }
+        onlineList.appendChild(elem);
+    }
+
 });
 
 document.querySelector('button').onclick = () => {
