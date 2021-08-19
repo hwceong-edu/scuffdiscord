@@ -1,4 +1,4 @@
-const socket = io('ws://localhost:8080');
+const socket = io();
 var typing = false;
 var timeout = undefined;
 
