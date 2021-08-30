@@ -3,18 +3,21 @@
     <head>
         <script src="/socket.io/socket.io.js"></script>
         <script defer src="app.js"></script>
+        <link rel="stylesheet" href="style.css">
     </head>
     <body>
-        <ul>
+        <div id="chatarea">
+            <ul id="global_chat" class="visibility">
 
-        </ul>
-        <input type="text" placeholder="message">
-        <button>send</button>
+            </ul>
+        </div>
+        <input type="text" id="globalinput" placeholder="message">
+        <button id="send">send</button>
         <p>
             
         </p>
         <div id="chatrooms">
-            <button>Global Chat</button>
+            <button id="global">Global Chat</button>
         </div>
         <p>Online:</p>
         <div id="online">

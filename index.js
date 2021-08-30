@@ -13,6 +13,10 @@ app.get('/app.js', (req, res) => {
     res.sendFile(__dirname + '/app/app.js')
 });
 
+app.get('/style.css', (req, res) => {
+    res.sendFile(__dirname+"/app/style.css")
+});
+
 var typing_names = [];
 var online = [];
 
@@ -36,7 +40,7 @@ io.on('connection', (socket) => {
     });
 
     socket.on('private message', (targetId, msg) => {
-        socket.to(targetId).emit('private message', socket.id, msg);
+        io.to(targetId).to(socket.id).emit('private message', socket.id, targetId, msg);
     });
 
     socket.on('typing', (name) => {

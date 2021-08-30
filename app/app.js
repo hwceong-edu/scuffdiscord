@@ -15,7 +15,39 @@ function waitForUnTyping() {
 socket.on('message', text => {
     const el = document.createElement('li');
     el.innerHTML = text;
-    document.querySelector('ul').appendChild(el);
+    document.getElementById('global_chat').appendChild(el);
+});
+
+socket.on('private message', (sender, receiver, text) => {
+    const chatarea = document.getElementById("chatarea")
+    var Id = null;
+
+    if (receiver === socket.id) {
+        Id = sender;
+    } else {
+        Id = receiver;
+    }
+
+    console.log(Id);
+
+    if (chatarea.querySelector("#id"+Id) == null) {
+        elem = document.createElement('ul');
+        elem.setAttribute("id", "id"+Id);
+        elem.setAttribute("class", "visible");
+        chatarea.appendChild(elem);
+    }
+
+    var childs = chatarea.children;
+    for (var i = 0; i < childs.length; i++) {
+        childs[i].className = "invisible";
+    }
+
+    document.getElementById("id"+Id).className = "visible";
+
+    const el = document.createElement('li');
+    el.innerHTML = sender.substr(0,2) + ": " + text;
+    document.getElementById("id"+Id).appendChild(el);
+    document.querySelector('input').id = "id"+Id;
 });
 
 socket.on('typing', names => {
@@ -59,22 +91,30 @@ socket.on('online', names => {
         } else {
             elem = document.createElement('button');
             elem.innerHTML = names[i];
+            elem.setAttribute("id", names[i]);
+            elem.setAttribute("onclick", "pm(this.id)");
         }
         onlineList.appendChild(elem);
     }
 
 });
 
-document.querySelector('button').onclick = () => {
-    const text = document.querySelector('input').value;
-    document.querySelector('input').value = '';
-    socket.emit('message', text);
+document.getElementById('send').onclick = () => {
+    const inputElem = document.querySelector('input');
+    const text = inputElem.value;
+    inputElem.value = '';
+
+    if (inputElem.id == "globalinput") {
+        socket.emit('message', text);
+    } else {
+        socket.emit('private message', inputElem.id.substr(2), text);
+    }
 }
 
 document.querySelector('input').onkeyup = (ev) => {
     if (ev.key === "Enter") {
         ev.preventDefault();
-        document.querySelector('button').click();
+        document.getElementById('send').click();
     } 
 }
 
@@ -87,4 +127,34 @@ document.querySelector('input').oninput = () => {
         clearTimeout(timeout);
         timeout = setTimeout(waitForUnTyping, 1000);
     }
+}
+
+document.getElementById("global").onclick = () => {
+    const chatarea = document.getElementById("chatarea")
+
+    var childs = chatarea.children;
+    for (var i = 0; i < childs.length; i++) {
+        childs[i].className = "invisible";
+    }
+    document.getElementById("global_chat").className = "visible";
+    document.querySelector('input').id = "globalinput";
+}
+
+function pm(selfId) {
+    const chatarea = document.getElementById("chatarea")
+    if (chatarea.querySelector("#id"+selfId) == null) {
+        elem = document.createElement('ul');
+        elem.setAttribute("id", "id"+selfId);
+        elem.setAttribute("class", "visible");
+        chatarea.appendChild(elem);
+    }
+
+    var childs = chatarea.children;
+    for (var i = 0; i < childs.length; i++) {
+        childs[i].className = "invisible";
+    }
+
+    document.getElementById("id"+selfId).className = "visible";
+
+    document.querySelector('input').id = "id"+selfId;
 }
